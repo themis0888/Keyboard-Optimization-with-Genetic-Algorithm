@@ -28,6 +28,9 @@ class Solution:
             pass
 
     # get coordinate of key by name
+    # ex)
+    #   sol.get_loc_by_name('a')
+    #   sol.get_loc_by_name('space')
     def get_loc_by_name(self, keyname):
         # for space bar
         if keyname == 'space':
