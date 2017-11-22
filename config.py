@@ -10,6 +10,6 @@ CONFIG = {
     'GA_mutation_rate': 0.1,
     'GA_mutation_noise': 5,
 
-	# https://en.wikipedia.org/wiki/Letter_frequency 
+    # https://en.wikipedia.org/wiki/Letter_frequency 
     'letter_frequency': "etaonrishdlfcmugypwbvkjxqz",
 }

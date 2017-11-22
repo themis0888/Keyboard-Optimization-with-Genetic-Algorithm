@@ -1,7 +1,7 @@
 from config import CONFIG
 from GA_fitness import fitness
 from solution import Solution
-from random import random, uniform
+from random import random, uniform, randint
 
 # random generation of population
 def GA_initialization():
@@ -22,7 +22,7 @@ def GA_crossover(sol1, sol2):
 
     # Crossover method 1. with ordering based on frequency, just crossover
     # alpha : randomly choose
-    alpha = int(random() * 27)
+    alpha = randint(0, 25)
     new_pos1 = [(0, 0) for _ in range(27)]
     new_pos2 = [(0, 0) for _ in range(27)]
     get_index = lambda t:26 if t == ' ' else ord(t)-ord('a')
