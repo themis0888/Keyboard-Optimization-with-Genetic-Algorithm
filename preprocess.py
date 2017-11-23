@@ -2,8 +2,9 @@ from collections import Counter
 
 
 '''
-preprocess : string(file name) -> dict of char, dict of seq
+preprocess : string(file name) -> dict(for char), dict(for seq)
 dict : set of {(string) : float}
+Example : preprocess()
 Eat the name of textfile(as a string) and calculate the frequency
 of each aphabet and every sequence. 
 '''
