@@ -28,25 +28,19 @@ class Solution:
         # generate random solution
         else:
             # random generate
-            self.positions = np.array([[np.random.rand() * CONFIG['keyboard_width'], np.random.rand() * CONFIG['keyboard_height']] for i in range(27)])
+            self.positions = np.array([[np.random.rand() * CONFIG['keyboard_width'], np.random.rand() * CONFIG['keyboard_height']] for i in range(Solution.num_alphabet)])
 
     # get coordinate of key by name
     # ex)
     #   sol.get_loc_by_name('a')
-    #   sol.get_loc_by_name('space')
     def get_loc_by_name(self, keyname):
-        # for space bar
-        if keyname == 'space':
-            return self.positions[Solution.num_alphabet]
-        # for a to z
-        else:
-            return self.positions[ord(keyname) - 97]
+        return self.positions[ord(keyname) - 97]
 
     # get coordinate of key
     def get_loc(self, index):
         return self.positions[index]
 
-    # get which finger will push the key (0 ~ 9)
+    # get which finger will push the key (0 ~ 7)
     def which_finger(self):
         # finger_number : which finger will push the key
         # move_distance : how much distance finger have to move to push the key
@@ -58,7 +52,7 @@ class Solution:
     # plot voronoi diagram
     def plot(self):
         # labels for labeling points
-        labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','SPACE']
+        labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
         # compute Voronoi tesselation
         vor = Voronoi(self.positions)
@@ -98,7 +92,7 @@ class Solution:
         areas = []
 
         # for each cells from a to spacebar, calculate area of cells
-        for i in range(Solution.num_alphabet + 1):
+        for i in range(Solution.num_alphabet):
             index_region = vor.point_region[i]
             index_vertices = vor.regions[index_region]
 
