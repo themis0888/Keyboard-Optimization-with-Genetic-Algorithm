@@ -7,4 +7,5 @@ class Field:
         self.width = CONFIG['keyboard_width']
         self.height = CONFIG['keyboard_height']
 
-    # ...
+    def which_finger(self, coord):
+        return int(coord[0] / (self.width / 8))
