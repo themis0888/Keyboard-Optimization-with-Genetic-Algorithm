@@ -1,5 +1,8 @@
 from field import Field
 from config import CONFIG
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial import Voronoi, voronoi_plot_2d
 
 # individual
 class Solution:
@@ -24,8 +27,8 @@ class Solution:
             self.positions = seed
         # generate random solution
         else:
-            # random generate ...
-            pass
+            # random generate
+            self.positions = [(np.random.rand() * CONFIG['keyboard_width'], np.random.rand() * CONFIG['keyboard_height']) for i in range(27)]
 
     # get coordinate of key by name
     # ex)
@@ -53,7 +56,15 @@ class Solution:
         return finger_number, move_distance
 
     # plot voronoi diagram
-    def plot():
-        pass
+    def plot(self):
+        # compute Voronoi tesselation
+        vor = Voronoi(self.positions)
 
-#sol = Solution([(i, i) for i in range(27)])
+        # plot
+        voronoi_plot_2d(vor)
+
+        # config plt
+        plt.xlim(0, CONFIG['keyboard_width'])
+        plt.ylim(0, CONFIG['keyboard_height'])
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.show()
