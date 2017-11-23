@@ -57,11 +57,19 @@ class Solution:
 
     # plot voronoi diagram
     def plot(self):
+        # labels for labeling points
+        labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','SPACE']
+
         # compute Voronoi tesselation
         vor = Voronoi(self.positions)
 
         # plot
-        voronoi_plot_2d(vor)
+        voronoi_plot_2d(vor, show_vertices=False, show_points=False)
+
+        # draw points and labels
+        plt.scatter(self.positions[:, 0], self.positions[:, 1], s=10)
+        for i, txt in enumerate(labels):
+            plt.annotate(txt, (self.positions[:, 0][i], self.positions[:, 1][i]))
 
         # config plt
         plt.xlim(0, CONFIG['keyboard_width'])
