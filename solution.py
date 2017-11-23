@@ -6,14 +6,14 @@ from scipy.spatial import Voronoi, voronoi_plot_2d
 
 # individual
 class Solution:
-    # data structure : list of tuples
-    # [(x, y), --> alphabet a (index = 0) and x, y are floats
-    #  (x, y), --> alphabet b (index = 1)
+    # data structure : numpy 2D array
+    # [[x, y], --> alphabet a (index = 0) and x, y are floats
+    #  [x, y], --> alphabet b (index = 1)
     #  .
     #  .
     #  .
-    #  (x, y), --> alphabet z (index = 25)
-    #  (x, y)  --> space bar
+    #  [x, y], --> alphabet z (index = 25)
+    #  [x, y]  --> space bar
     # ]
 
     num_alphabet = 26
@@ -24,11 +24,11 @@ class Solution:
     def __init__(self, seed=None):
         # generate solution with seed list
         if seed:
-            self.positions = seed
+            self.positions = np.array(seed)
         # generate random solution
         else:
             # random generate
-            self.positions = [(np.random.rand() * CONFIG['keyboard_width'], np.random.rand() * CONFIG['keyboard_height']) for i in range(27)]
+            self.positions = np.array([[np.random.rand() * CONFIG['keyboard_width'], np.random.rand() * CONFIG['keyboard_height']] for i in range(27)])
 
     # get coordinate of key by name
     # ex)
