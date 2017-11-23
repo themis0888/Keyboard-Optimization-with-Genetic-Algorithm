@@ -76,3 +76,40 @@ class Solution:
         plt.ylim(0, CONFIG['keyboard_height'])
         plt.gca().set_aspect('equal', adjustable='box')
         plt.show()
+
+    # calculate area of each voronoi cells
+    def area(self):
+        # calculate area of polygon using showlace formula
+        def poly_area(x,y):
+            return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+
+        # expand voronoi diagram for 4-directions
+        under = self.positions * np.array([1, -1])
+        right = self.positions * np.array([-1, 1]) + np.array([2 * CONFIG['keyboard_width'], 0])
+        upper = self.positions * np.array([1, -1]) + np.array([0, 2 * CONFIG['keyboard_height']])
+        left = self.positions * np.array([-1, 1])
+
+        points = np.concatenate((self.positions, under, right, upper, left), axis=0)
+
+        # make voronoi diagram
+        vor = Voronoi(points)
+
+        # list of areas of each voronoi cells
+        areas = []
+
+        # for each cells from a to spacebar, calculate area of cells
+        for i in range(Solution.num_alphabet + 1):
+            index_region = vor.point_region[i]
+            index_vertices = vor.regions[index_region]
+
+            # coordinate of each vertices
+            x_coord = []
+            y_coord = []
+
+            for j in index_vertices:
+                x_coord.append(vor.vertices[j][0])
+                y_coord.append(vor.vertices[j][1])
+
+            areas.append(poly_area(x_coord, y_coord))
+        
+        return areas
