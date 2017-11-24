@@ -2,6 +2,7 @@ from config import CONFIG
 from GA_fitness import fitness
 from solution import Solution
 from random import random, uniform, randint
+import numpy as np
 
 # random generation of population
 def GA_initialization():
@@ -21,8 +22,8 @@ def GA_crossover(sol1, sol2):
     abo = CONFIG['letter_frequency']
 
     # Crossover method 1. with ordering based on frequency, just crossover
-    # alpha : randomly choose
-    # DEAD METHOD
+    # CUTOFF alpha : randomly choose
+    # DEAD METHOD, since it does not seems to generate better result
     if False:
         alpha = randint(0, 24)
         new_pos1 = [(0, 0) for _ in range(27)]
@@ -37,6 +38,61 @@ def GA_crossover(sol1, sol2):
             else:
                 new_pos1[ind] = sol2.get_loc(ind)
                 new_pos2[ind] = sol1.get_loc(ind)
+
+    # Crossover method 2, idea by BJ
+    # offspring1 : given location information from parent 1
+    #              given alphabet information from parent 2
+    #                              ordering from left to right
+    # offspring2 : given location information from parent 2
+    #              given alphabet information from parent 1
+    #                              ordering from left to right
+    # ISSUE: Some limitation on searching for solution space?
+    # ISSUE: Is it generate better result?
+    def crossover2(pos1, pos2):
+        assert pos1.shape[1] == 2 == pos2.shape[1]
+
+        # ordering information
+        # if p1 = [1, 3, 2, 0] means
+        #   among b(1), d(3), c(2), a(0),
+        #   b is on the leftmost side, a is on the rightmost side
+        p1 = np.argsort(pos1[:,0]) # pos1[p1[i]][0] < pos1[p1[i+1]][0]
+        p2 = np.argsort(pos2[:,0])
+
+        new_pos1 = np.zeros(pos1.shape)
+        new_pos2 = np.zeros(pos2.shape)
+
+        # alphabet with index ai is i'th in new_pos2
+        for i, ai in enumerate(p2):
+            new_pos1[ai] = pos1[p1[i]]
+
+        for j, aj in enumerate(p1):
+            new_pos2[aj] = pos2[p2[j]]
+
+        return new_pos1, new_pos2
+
+    a, b = crossover2(
+        np.array([
+            [0, 0],
+            [1, 0],
+            [0.4, 0],
+            [7, 0]]),
+        np.array([
+            [2, 0],
+            [4, 0],
+            [1.5, 0],
+            [1, 0]]))
+    assert  np.all(a == np.array([
+            [1, 0],
+            [7, 0],
+            [0.4, 0],
+            [0, 0]]))
+    assert np.all(b ==  np.array([
+            [1, 0],
+            [2, 0],
+            [1.5, 0],
+            [4, 0]]))
+    if True:
+        new_pos1, new_pos2 = crossover2(sol1.positions, sol2.positions)
 
     return Solution(new_pos1), Solution(new_pos2)
 
