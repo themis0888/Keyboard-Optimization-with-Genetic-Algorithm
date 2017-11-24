@@ -22,19 +22,21 @@ def GA_crossover(sol1, sol2):
 
     # Crossover method 1. with ordering based on frequency, just crossover
     # alpha : randomly choose
-    alpha = randint(0, 25)
-    new_pos1 = [(0, 0) for _ in range(27)]
-    new_pos2 = [(0, 0) for _ in range(27)]
-    get_index = lambda t:26 if t == ' ' else ord(t)-ord('a')
+    # DEAD METHOD
+    if False:
+        alpha = randint(0, 24)
+        new_pos1 = [(0, 0) for _ in range(27)]
+        new_pos2 = [(0, 0) for _ in range(27)]
+        get_index = lambda t:ord(t)-ord('a')
 
-    for it, e in enumerate(' ' + abo): # ' ' means spacebar
-        ind = get_index(e)
-        if it < alpha:
-            new_pos1[ind] = sol1.get_loc(ind)
-            new_pos2[ind] = sol2.get_loc(ind)
-        else:
-            new_pos1[ind] = sol2.get_loc(ind)
-            new_pos2[ind] = sol1.get_loc(ind)
+        for it, e in enumerate(abo):
+            ind = get_index(e)
+            if it < alpha:
+                new_pos1[ind] = sol1.get_loc(ind)
+                new_pos2[ind] = sol2.get_loc(ind)
+            else:
+                new_pos1[ind] = sol2.get_loc(ind)
+                new_pos2[ind] = sol1.get_loc(ind)
 
     return Solution(new_pos1), Solution(new_pos2)
 
@@ -44,19 +46,47 @@ def GA_mutation(sol):
         return sol
 
     pos = sol.positions
-    new_pos = []
+    new_sol = None
 
-    # Mutation method 1. change little bit on each poisition
-    noise = CONFIG['GA_mutation_noise']
-    for x, y in pos:
-        new_pos.append((
-            x + uniform(-noise, noise),
-            y + uniform(-noise, noise) 
-        ))
-    # ISSUE: evaluate random float is much more time-consuming
-    #   comparing with random int
+    if randint(0, 1): # 0 for 50%, 1 for 50%
+        # Mutation method 1. change little bit on each poisition
+        new_pos = []
 
-    new_sol = Solution(new_pos) # ISSUE: Managing position outside of the field
+        noise = CONFIG['GA_mutation_noise']
+        for x, y in pos:
+            new_pos.append((
+                x + uniform(-noise, noise),
+                y + uniform(-noise, noise) 
+            ))
+        # ISSUE: evaluate random float is much more time-consuming
+        #   comparing with random int
+        # ISSUE: Managing position outside of the field
+
+        new_sol = Solution(new_pos)
+
+    else:
+        # Mutation method 2. Swap two points, with specific rate.
+        # If swapped for one time, check for one more time with same rate.
+        # Repeat swapping until the swapping limit is reached.
+        for i in range(CONFIG['GA_mutation_swap_limit']):
+            if random() > CONFIG['GA_mutation_swap_rate']:
+                break
+
+            # randomly choose two indexes
+            assert len(pos) == 26, "Error on implementation"
+            i = randint(0, len(pos)-1) # probably, len(pos) == 26
+            j = randint(0, len(pos)-2)
+            print(i, j)
+            if j >= i:
+                j = j+1
+
+            # SWAP VERIFIED (with some experiment)
+            a, b = pos[j].copy(), pos[i].copy()
+            pos[i], pos[j] = a, b
+
+
+        new_sol = Solution(pos)
+
     return new_sol
 
 # run genetic algorithm

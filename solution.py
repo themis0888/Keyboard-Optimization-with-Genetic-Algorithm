@@ -13,7 +13,6 @@ class Solution:
     #  .
     #  .
     #  [x, y], --> alphabet z (index = 25)
-    #  [x, y]  --> space bar
     # ]
 
     num_alphabet = 26
@@ -23,7 +22,7 @@ class Solution:
     # constructor
     def __init__(self, seed=None):
         # generate solution with seed list
-        if seed:
+        if seed is not None:
             self.positions = np.array(seed)
         # generate random solution
         else:
