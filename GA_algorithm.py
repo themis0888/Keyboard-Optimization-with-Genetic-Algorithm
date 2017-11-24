@@ -1,20 +1,26 @@
 from config import CONFIG
 from GA_fitness import fitness
 from solution import Solution
-from random import random, uniform, randint
+from random import random, uniform, randint, choice
 import numpy as np
 
 # random generation of population
 def GA_initialization():
-    return None
+    current_population = []
+
+    for i in range(CONFIG['GA_num_population']):
+        current_population.append(Solution())
+
+    return current_population
 
 # select elite
-def GA_selection():
-    return None
+def GA_selection(population):
+    sorted_population = sorted(population, key=fitness)
+    return sorted_population[:CONFIG['GA_num_selection']]
 
 # select two random parents for crossover
-def GA_select_two_parents():
-    return None
+def GA_select_two_parents(population):
+    return choice(population), choice(population)
 
 # crossover two parents
 def GA_crossover(sol1, sol2):
@@ -132,7 +138,7 @@ def GA_mutation(sol):
             assert len(pos) == 26, "Error on implementation"
             i = randint(0, len(pos)-1) # probably, len(pos) == 26
             j = randint(0, len(pos)-2)
-            print(i, j)
+            #print(i, j)
             if j >= i:
                 j = j+1
 
@@ -152,6 +158,7 @@ def run_GA():
 
     # iteration for generations
     for num_gen in range(CONFIG['GA_num_generation']):
+        print('GEN', num_gen)
         # empty population for next generation
         next_population = []
 
@@ -159,7 +166,7 @@ def run_GA():
         next_population += GA_selection(current_population)
 
         # fill next population with offsprings
-        while len(next_population) == CONFIG['GA_num_population']:
+        while len(next_population) != CONFIG['GA_num_population']:
             # crossover
             left, right = GA_select_two_parents(current_population)
             left_offspring, right_offspring = GA_crossover(left, right)
