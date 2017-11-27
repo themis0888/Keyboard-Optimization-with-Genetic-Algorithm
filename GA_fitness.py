@@ -1,11 +1,12 @@
 from solution import Solution
 from config import CONFIG
+from preprocess import Preprocess
 
 # fitness function
 def fitness(sol):
     fit_val = 0
     
-    fit_val += 1.0 * fitness_area(sol)
+    fit_val += 1.0 * fitness_area(sol) + fitness_dist(sol)
 
     return fit_val
 
@@ -34,7 +35,7 @@ def fitness_area(sol):
 
 # distance 
 def fitness_dist(sol):
-    char_freq, seq_freq = preprocess()
+    char_freq, seq_freq = Preprocess()
 
     finger_list = sol.which_finger
     pos_list = sol.positions
@@ -47,20 +48,20 @@ def fitness_dist(sol):
     # pair is pair of alphabet such like 'aa'...
     for pair in seq_freq:
 
-        # same key - fitness falue = 1 
+        # same key - fitness falue = 10
         if pair[0] == pair[1]:
-            fit_val += 1
+            fit_val += 10 * seq_freq[pair]
 
-        # same finger but not same key - fitness falue = 1.5
-        elif key_list[pair[0]] == key_list[pair[1]]:
-            fit_val += 1.5
+        # same finger but not same key - fitness falue = 10 to 20
+        elif key_list[pair[0]][0] == key_list[pair[1]][0]:
+            fit_val += (10 + abs(key_list[pair[0]][1][1] - key_list[pair[1]][1][1])/4) * seq_freq[pair]
 
-        # diff finger, same side hand - fit value = 0.5
-        elif ((key_list[pair[0]] < 4) and (key_list[pair[1]] < 4) 
-            or (key_list[pair[0]] >= 4) and (key_list[pair[1]] >= 4)):
-            fit_val += 0.5
+        # diff finger, same side hand - fit value = 5
+        elif ((key_list[pair[0]][0] < 4) and (key_list[pair[1]][0] < 4) 
+            or (key_list[pair[0]][0] >= 4) and (key_list[pair[1]][0] >= 4)):
+            fit_val += 5 * seq_freq[pair]
 
         # diff finger, diff side hand - fit value = 0
 
-
     return fit_val
+
