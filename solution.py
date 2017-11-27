@@ -111,6 +111,8 @@ class Solution:
         self.which_finger = which_finger
         self.voronoi_edges = voronoi_edges
 
+        self.vor = vor
+
     # get coordinate of key by name
     # ex)
     #   sol.get_loc_by_name('a')
@@ -124,13 +126,10 @@ class Solution:
     # plot voronoi diagram
     def plot(self):
         # labels for labeling points
-        labels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-
-        # compute Voronoi tesselation
-        vor = Voronoi(self.positions)
+        labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
         # plot
-        voronoi_plot_2d(vor, show_vertices=False, show_points=False)
+        voronoi_plot_2d(self.vor, show_vertices=False, show_points=False)
 
         # draw points and labels
         plt.scatter(self.positions[:, 0], self.positions[:, 1], s=10)
