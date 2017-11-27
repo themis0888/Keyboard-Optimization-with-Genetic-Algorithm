@@ -115,14 +115,25 @@ def GA_mutation(sol):
         new_pos = []
 
         noise = CONFIG['GA_mutation_noise']
+
+        width, height = Solution.field.width, Solution.field.height
         for x, y in pos:
-            new_pos.append((
-                x + uniform(-noise, noise),
-                y + uniform(-noise, noise) 
-            ))
+            new_x = x + uniform(-noise, noise)
+            new_y = y + uniform(-noise, noise)
+
+            if new_x < 0:
+                new_x = 0
+            if new_x > width:
+                new_x = width
+
+            if new_y < 0:
+                new_y = 0
+            elif new_y > height:
+                new_y = height
+
+            new_pos.append((new_x, new_y))
         # ISSUE: evaluate random float is much more time-consuming
         #   comparing with random int
-        # ISSUE: Managing position outside of the field
 
         new_sol = Solution(new_pos)
 
