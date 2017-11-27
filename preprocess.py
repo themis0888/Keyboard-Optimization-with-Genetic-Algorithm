@@ -16,7 +16,7 @@ def preprocess(filename = 'text.txt'):
 	lines = f.read()
 	line_lst = list(lines.lower())
 	for c in line_lst:
-		if c.isalpha() or c == ' ':
+		if c.isalpha() or c:
 			chr_list.append(c)
 	rel_list = []
 	for i in range(len(chr_list)-1):
