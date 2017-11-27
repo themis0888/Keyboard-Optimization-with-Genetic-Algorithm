@@ -58,6 +58,9 @@ class Solution:
         # list of number of fingers correponding to alphabets
         which_finger = []
 
+        # list of coordinates of vertices of each voronoi regions
+        voronoi_edges = []
+
         # for each cells from a to spacebar, calculate area of cells
         for i in range(Solution.num_alphabet):
             index_region = vor.point_region[i]
@@ -73,6 +76,12 @@ class Solution:
                 y_coord.append(vor.vertices[j][1])
 
             areas.append(poly_area(x_coord, y_coord))
+
+            # calculate vertices of voronoi region
+            edge_vertices = []
+            for j in index_vertices:
+                edge_vertices.append(vor.vertices[j])
+            voronoi_edges.append(edge_vertices)
 
             # calculate min and max of x, y coord
             min_x = min(x_coord)
@@ -100,6 +109,7 @@ class Solution:
         self.areas_rect = areas_rect
         self.central_points = central_points
         self.which_finger = which_finger
+        self.voronoi_edges = voronoi_edges
 
     # get coordinate of key by name
     # ex)
