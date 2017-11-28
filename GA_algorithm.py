@@ -169,13 +169,15 @@ def run_GA():
 
     # iteration for generations
     for num_gen in range(CONFIG['GA_num_generation']):
-        print('GEN', num_gen)
+        
         # empty population for next generation
         next_population = []
 
         # add elite from current population
         next_population += GA_selection(current_population)
 
+        if num_gen%10 == 0:
+            print('Gen : {} \t Fitness : {}'.format(num_gen,fitness(next_population[0])))
         # fill next population with offsprings
         while len(next_population) != CONFIG['GA_num_population']:
             # crossover
