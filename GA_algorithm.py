@@ -24,17 +24,19 @@ def GA_select_two_parents(population):
 
 # crossover two parents
 def GA_crossover(sol1, sol2):
+    import sys
+    assert sys.version_info[0] == 3, sys.version_info
 
     abo = CONFIG['letter_frequency']
+    get_index = lambda t:ord(t)-ord('a')
 
     # Crossover method 1. with ordering based on frequency, just crossover
     # CUTOFF alpha : randomly choose
     # DEAD METHOD, since it does not seems to generate better result
     if False:
         alpha = randint(0, 24)
-        new_pos1 = [(0, 0) for _ in range(27)]
-        new_pos2 = [(0, 0) for _ in range(27)]
-        get_index = lambda t:ord(t)-ord('a')
+        new_pos1 = [(0, 0) for _ in range(26)]
+        new_pos2 = [(0, 0) for _ in range(26)]
 
         for it, e in enumerate(abo):
             ind = get_index(e)
@@ -97,8 +99,116 @@ def GA_crossover(sol1, sol2):
             [2, 0],
             [1.5, 0],
             [4, 0]]))
+
+    # Crossover method 3, idea by BS
+    # offspring1 : given left-half location from parent 1
+    #              given right-half location from parent 2
+    # offspring2 : given left-half location from parent 2
+    #              given right-half location from parent 1
+    # alphabet information on each offspring
+    #    -> depending on priority on alphabet frequency
+    #
+    # ISSUE: Is it generate better result?
+    def crossover3(pos1, pos2):
+        assert len(pos1) == len(pos2) == 26, \
+            "Asserting fail on divide 2 parts: 13+13"
+
+        # ordering information
+        # if p1 = [1, 3, 2, 0] means
+        #   among b(1), d(3), c(2), a(0),
+        #   b is on the leftmost side, a is on the rightmost side
+        p1 = np.argsort(pos1[:,0]) # pos1[p1[i]][0] < pos1[p1[i+1]][0]
+        p2 = np.argsort(pos2[:,0])
+
+        p1_left_pos_idx = p1[:13]
+        p1_right_pos_idx = p2[13:]
+
+        p2_left_pos_idx = p2[:13]
+        p2_right_pos_idx = p1[13:]
+
+        new_pos1 = np.zeros(pos1.shape)
+        new_pos2 = np.zeros(pos2.shape)
+
+        # decide which part to go when alphabet ALPHA given
+        # case 1. ALPHA is on the left on parent 1 and
+        #         ALPHA is on the left on parent 2
+        #   -> put ALPHA on just corresponding location on offsprings 1
+        # case 2. ALPHA is on the right on parent 1 and
+        #         ALPHA is on the right on parent 2
+        #   -> just same as case 1.
+        # case 3. ALPHA is on the left on parent 1 and
+        #         ALPHA is on the right on parent 2
+        #   -> Both corresponding locations are on the offspring 1
+        #   -> Yield one between them, for some another alphabet,
+        #      which assigned to both location on offspring 2
+        # case 4. ALPHA is on the right on parent 1 and
+        #         ALPHA is on the left on parent 2
+        #   -> Both corresponding locations are on the offspring 2
+        #   -> Yield one between them, for some another alphabet,
+        #      which assigned to both location on offspring 1
+
+        # control case 3 and case 4
+        # list of tuples: (alphabetid)
+        off1_extra = [] # case 3. extra alphabets on offspring 1
+        off2_extra = [] # case 4. extra alphabets on offspring 2
+
+        for alphabet in abo:
+            idx = get_index(alphabet)
+
+            if idx in p1_left_pos_idx:
+                if idx in p2_left_pos_idx:
+                    new_pos1[idx] = pos1[idx]
+                    new_pos2[idx] = pos2[idx]
+
+                else:
+                    # case 3
+                    if off2_extra:
+                        idx2 = off2_extra.pop(0)
+
+                        if randint(0, 1):
+                            new_pos1[idx] = pos1[idx]
+                            new_pos2[idx] = pos1[idx2]
+                            new_pos1[idx2] = pos2[idx]
+                            new_pos2[idx2] = pos2[idx2]
+                        else:
+                            new_pos1[idx] = pos2[idx]
+                            new_pos2[idx] = pos2[idx2]
+                            new_pos1[idx2] = pos1[idx]
+                            new_pos2[idx2] = pos1[idx2]
+
+                    else:
+                        off1_extra.append(idx)
+
+            else:
+                if idx not in p2_left_pos_idx:
+                    new_pos1[idx] = pos2[idx]
+                    new_pos2[idx] = pos1[idx]
+
+                else:
+                    # case 4
+                    if off1_extra:
+                        idx2 = off1_extra.pop(0)
+
+                        if randint(0, 1):
+                            new_pos1[idx] = pos2[idx2]
+                            new_pos2[idx] = pos2[idx]
+                            new_pos1[idx2] = pos1[idx2]
+                            new_pos2[idx2] = pos1[idx]
+                        else:
+                            new_pos1[idx] = pos1[idx2]
+                            new_pos2[idx] = pos1[idx]
+                            new_pos1[idx2] = pos2[idx2]
+                            new_pos2[idx2] = pos2[idx]
+
+                    else:
+                        off2_extra.append(idx)
+
+        assert off1_extra == [] == off2_extra
+
+        return new_pos1, new_pos2
+
     if True:
-        new_pos1, new_pos2 = crossover2(sol1.positions, sol2.positions)
+        new_pos1, new_pos2 = crossover3(sol1.positions, sol2.positions)
 
     return Solution(new_pos1), Solution(new_pos2)
 
