@@ -26,8 +26,15 @@ class Solution:
             self.positions = np.array(seed)
         # generate random solution
         else:
+            # auxiliary random function which never returns 0
+            def rand_nonzero():
+                temp = np.random.rand()
+                while temp == 0.0:
+                    temp = np.random.rand()
+                return temp
+
             # random generate
-            self.positions = np.array([[np.random.rand() * CONFIG['keyboard_width'], np.random.rand() * CONFIG['keyboard_height']] for i in range(Solution.num_alphabet)])
+            self.positions = np.array([[rand_nonzero() * CONFIG['keyboard_width'], rand_nonzero() * CONFIG['keyboard_height']] for i in range(Solution.num_alphabet)])
 
         # calculate necessary values
 

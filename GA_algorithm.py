@@ -121,15 +121,15 @@ def GA_mutation(sol):
             new_x = x + uniform(-noise, noise)
             new_y = y + uniform(-noise, noise)
 
-            if new_x < 0:
-                new_x = 0
-            if new_x > width:
-                new_x = width
+            if new_x <= 0:
+                new_x = x
+            elif new_x >= width:
+                new_x = x
 
-            if new_y < 0:
-                new_y = 0
-            elif new_y > height:
-                new_y = height
+            if new_y <= 0:
+                new_y = y
+            elif new_y >= height:
+                new_y = y
 
             new_pos.append((new_x, new_y))
         # ISSUE: evaluate random float is much more time-consuming
@@ -176,7 +176,7 @@ def run_GA():
         # add elite from current population
         next_population += GA_selection(current_population)
 
-        if num_gen%10 == 0:
+        if 'num_gen % 10 == 0':
             print('Gen : {} \t Fitness : {}'.format(num_gen,fitness(next_population[0])))
         # fill next population with offsprings
         while len(next_population) != CONFIG['GA_num_population']:
