@@ -1,6 +1,8 @@
 from solution import Solution
 from config import CONFIG
-from preprocess import Preprocess
+import preprocess
+
+
 
 # fitness function
 def fitness(sol):
@@ -33,9 +35,10 @@ def fitness_area(sol):
     return fit_val
 
 
+seq_freq = preprocess.seq_freq
+
 # distance 
 def fitness_dist(sol):
-    char_freq, seq_freq = Preprocess()
 
     finger_list = sol.which_finger
     pos_list = sol.positions

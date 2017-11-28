@@ -14,4 +14,6 @@ CONFIG = {
 
     # https://en.wikipedia.org/wiki/Letter_frequency 
     'letter_frequency': "etaonrishdlfcmugypwbvkjxqz",
+
+    'alphabet_string': 'abcdefghijklmnopqrstuvwxyz'
 }
