@@ -207,8 +207,32 @@ def GA_crossover(sol1, sol2):
 
         return new_pos1, new_pos2
 
+    # Crossover method 4, BLX-alpha, (blend crossover)
+    # http://www.tomaszgwiazda.com/blendX.htm
+    def crossover4(pos1, pos2):
+        assert len(pos1) == 26 == len(pos2)
+
+        new_pos1 = np.zeros(pos1.shape)
+        new_pos2 = np.zeros(pos2.shape)
+
+        width, height = Solution.field.width, Solution.field.height
+        dx = 4
+        dy = 10
+
+        for i in range(26):
+            minx = max(min(pos1[i][0], pos2[i][0]) - dx, 0)
+            maxx = min(max(pos1[i][0], pos2[i][0]) + dx, width)
+
+            miny = max(min(pos1[i][1], pos2[i][1]) - dy, 0)
+            maxy = min(max(pos1[i][1], pos2[i][1]) + dy, height)
+
+            new_pos1[i] = [uniform(minx, maxx), uniform(miny, maxy)]
+            new_pos2[i] = [uniform(minx, maxx), uniform(miny, maxy)]
+        return new_pos1, new_pos2
+
+
     if True:
-        new_pos1, new_pos2 = crossover3(sol1.positions, sol2.positions)
+        new_pos1, new_pos2 = crossover4(sol1.positions, sol2.positions)
 
     return Solution(new_pos1), Solution(new_pos2)
 
