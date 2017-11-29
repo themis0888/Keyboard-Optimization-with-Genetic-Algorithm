@@ -110,8 +110,7 @@ def GA_crossover(sol1, sol2):
     #
     # ISSUE: Is it generate better result?
     def crossover3(pos1, pos2):
-        assert len(pos1) == len(pos2) == 26, \
-            "Asserting fail on divide 2 parts: 13+13"
+        assert len(pos1) == len(pos2) == 26
 
         # ordering information
         # if p1 = [1, 3, 2, 0] means
@@ -120,11 +119,77 @@ def GA_crossover(sol1, sol2):
         p1 = np.argsort(pos1[:,0]) # pos1[p1[i]][0] < pos1[p1[i+1]][0]
         p2 = np.argsort(pos2[:,0])
 
-        p1_left_pos_idx = p1[:13]
-        p1_right_pos_idx = p2[13:]
+        # ISSUE: overlapping problem.
+        # For each parent, one point in parent and other one in other parent
+        #   could be 'close' to each other. These pairs of points should not
+        #   reach to single offspring.
+        # Dividing into two parts for each parent, making no overlapping points.
+        # ASSUMPTION: there is no two close points in one parent
+        # The assumption is not really critical, but it helps thinking
+        close = lambda pos1, pos2: \
+            np.abs(pos1[0]-pos2[0]) < 0.01 and \
+            np.abs(pos1[1]-pos2[1]) < 0.01
 
-        p2_left_pos_idx = p2[:13]
-        p2_right_pos_idx = p1[13:]
+        # Extract close points iteratively.
+        overlapped = [] # tuple of (idx1, idx2)
+        for idx1 in p1:
+            point1 = pos1[idx1]
+
+            for idx2 in p2:
+                point2 = pos2[idx2]
+                if close(point1, point2):
+                    overlapped.append((idx1, idx2))
+                    break
+                if point2[0] > point1[0] + 0.01:
+                    break
+
+        # Below statements are used before fixing overlapping issue
+        # p1_left_pos_idx = p1[:13]
+        # p1_right_pos_idx = p2[13:]
+        # p2_left_pos_idx = p2[:13]
+        # p2_right_pos_idx = p1[13:]
+
+        # Step 1. Divide overlapped points into two part
+        #   with ordering left to right
+        #   (may be not exactly half for odd)
+        # Step 2. Divide remaining points into two parts
+        #   with ordering left to right
+        p1_left_pos_idx  = []  # left part of offspring 1
+        p1_right_pos_idx = []  # right part of offspring 2
+        p2_left_pos_idx  = []  # left part of offspring 2
+        p2_right_pos_idx = []  # right part of offspring 1
+
+        # Step 1
+        half = len(overlapped) // 2
+        for i, (idx1, idx2) in enumerate(overlapped):
+            if i < half:
+                p1_left_pos_idx.append(idx1)
+                p2_left_pos_idx.append(idx2)
+            else:
+                p1_right_pos_idx.append(idx1)
+                p2_right_pos_idx.append(idx2)
+
+        p1_used_idx = p1_left_pos_idx + p1_right_pos_idx
+        p2_used_idx = p2_left_pos_idx + p2_right_pos_idx
+
+        # Step 2
+        for idx in p1:
+            if idx not in p1_used_idx:
+                if len(p1_left_pos_idx) < 13:
+                    p1_left_pos_idx.append(idx)
+                else:
+                    p1_right_pos_idx.append(idx)
+        for idx in p2:
+            if idx not in p2_used_idx:
+                if len(p2_left_pos_idx) < 13:
+                    p2_left_pos_idx.append(idx)
+                else:
+                    p2_right_pos_idx.append(idx)
+
+        assert len(p1_left_pos_idx) == 13
+        assert len(p1_right_pos_idx) == 13
+        assert len(p2_left_pos_idx) == 13
+        assert len(p2_right_pos_idx) == 13
 
         new_pos1 = np.zeros(pos1.shape)
         new_pos2 = np.zeros(pos2.shape)
@@ -205,6 +270,7 @@ def GA_crossover(sol1, sol2):
 
         assert off1_extra == [] == off2_extra
 
+
         return new_pos1, new_pos2
 
     # Crossover method 4, BLX-alpha, (blend crossover)
@@ -232,7 +298,7 @@ def GA_crossover(sol1, sol2):
 
 
     if True:
-        new_pos1, new_pos2 = crossover4(sol1.positions, sol2.positions)
+        new_pos1, new_pos2 = crossover3(sol1.positions, sol2.positions)
 
     return Solution(new_pos1), Solution(new_pos2)
 
