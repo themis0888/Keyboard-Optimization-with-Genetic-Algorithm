@@ -138,8 +138,15 @@ class Solution:
         # plot
         voronoi_plot_2d(self.vor, show_vertices=False, show_points=False)
 
+        colors = ['#ffb3b3', '#ffd9b3', '#ffffb3', '#d9ffb3', '#b3ffff', '#b3d9ff', '#b3b3ff', '#d9b3ff']
+        for i in range(Solution.num_alphabet):
+            index_region = self.vor.point_region[i]
+            index_vertices = self.vor.regions[index_region]
+            polygon = [self.vor.vertices[j] for j in index_vertices]
+            plt.fill(*zip(*polygon), colors[self.which_finger[i]])
+
         # draw points and labels
-        plt.scatter(self.positions[:, 0], self.positions[:, 1], s=10)
+        plt.scatter(self.positions[:, 0], self.positions[:, 1], s=10, zorder=100)
         for i, txt in enumerate(labels):
             plt.annotate(txt, (self.positions[:, 0][i], self.positions[:, 1][i]))
 
