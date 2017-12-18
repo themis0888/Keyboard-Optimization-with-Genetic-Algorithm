@@ -3,7 +3,7 @@ CONFIG = {
     'keyboard_width': 100,
     'keyboard_height': 40,
 
-    'GA_num_generation': 200,
+    'GA_num_generation': 400,
     'GA_num_population': 100,
     'GA_num_selection': 20,
 

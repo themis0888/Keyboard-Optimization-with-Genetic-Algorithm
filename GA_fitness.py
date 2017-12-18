@@ -4,8 +4,6 @@ import preprocess
 
 
 
-
-
 # fitness function
 def fitness(sol):
     fit_val = 0
@@ -38,7 +36,7 @@ def fitness_area(sol):
 
 
 # distance 
-def fitness_dist(sol, scale = 1):
+def fitness_dist(sol, scale = 0.8):
     finger_list = sol.which_finger
     pos_list = sol.positions
     seq_freq = preprocess.seq_freq
